@@ -1,5 +1,7 @@
 package com.example.kafkatrackingvehicle.config;
 
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,8 +11,7 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Properties;
 
 @Configuration
 public class KafkaProducerConfig {
@@ -19,17 +20,17 @@ public class KafkaProducerConfig {
     private String bootstrapServers;
 
     @Bean
-    public Map<String, Object> producerConfig() {
-        HashMap<String, Object> props = new HashMap<>();
+    public Producer<String, Object> createProducer() {
+        Properties props=new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        return props;
+        return  new KafkaProducer(props);
     }
 
     @Bean
     public ProducerFactory<String, String> producerFactory() {
-        return new DefaultKafkaProducerFactory<>(producerConfig());
+        return new DefaultKafkaProducerFactory<>(createProducer());
     }
 
     @Bean

@@ -17,7 +17,9 @@ public class KafkaTrackingVehicleApplication {
     @Bean
     CommandLineRunner commandLineRunner(KafkaTemplate<String,String> kafkaTemplate){
         return args -> {
-            kafkaTemplate.send("tracking_vehicle","Hello mother fucker");
+          for (int i=0;i<200;i++){
+              kafkaTemplate.send("tracking_vehicle","Hello mother fucker"+String.valueOf(i));
+          }
 
         };
     }
