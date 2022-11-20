@@ -5,12 +5,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.TopicBuilder;
 
+import static com.example.kafkatrackingvehicle.constant.Constant.TOPIC;
+
 @Configuration
 public class KafkaTopicConfig {
 
     @Bean
     public NewTopic vehicleTopic() {
-        return TopicBuilder.name("tracking_vehicle")
+        return TopicBuilder.name(TOPIC)
                 .build();
     }
 }
