@@ -18,22 +18,25 @@ public class KafkaListeners {
             groupId = GROUP_ID)
     public void consume(String message) {
         CountDownLatch latch = new CountDownLatch(1);
-        Runnable consumerThread = new ConsumerThread(
+        Runnable consumerRunnable = new ConsumerRunnable(
                 BOOTSTRAP_SERVERS,
                 GROUP_ID,
                 TOPIC,
                 latch
         );
-        Thread thread = new Thread(consumerThread);
+        Thread thread = new Thread(consumerRunnable);
         thread.start();
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             log.info("Caught shutdown hook");
-            ((ConsumerThread) consumerThread).shutdown();
+            ((ConsumerRunnable)consumerRunnable).shutdown();
             try {
                 latch.await();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+               e.printStackTrace();
+            }
+            finally {
+                log.info("App is closed");
             }
             log.info("Application has exited");
         }));

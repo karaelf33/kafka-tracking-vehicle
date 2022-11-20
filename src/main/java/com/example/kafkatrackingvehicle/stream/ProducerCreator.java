@@ -53,6 +53,7 @@ public class ProducerCreator {
                 public void onCompletion(RecordMetadata recordMetadata, Exception e) {
 
                     if (e == null) {
+                        System.out.println("bbbbbbb");
                         log.info("Received new metadata. \n" +
                                 "Topic :" + recordMetadata.topic() + "\n" +
                                 "Partition:" + recordMetadata.partition() + "\n" +
