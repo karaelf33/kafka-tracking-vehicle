@@ -35,7 +35,6 @@ public class ConsumerRunnable implements Runnable {
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
         consumer = new KafkaConsumer<>(props);
-      //  consumer.subscribe(Collections.singleton(topic));
         TopicPartition partitionToReadFrom=new TopicPartition(TOPIC,0);
         long offsetReadFrom=15L;
         consumer.assign(Arrays.asList(partitionToReadFrom));
@@ -43,6 +42,11 @@ public class ConsumerRunnable implements Runnable {
 
         consumer.seek(partitionToReadFrom,offsetReadFrom);
 
+
+    }
+
+    @Override
+    public void run() {
         try {
             int message=0;
             while (message<10) {
@@ -60,11 +64,6 @@ public class ConsumerRunnable implements Runnable {
             consumer.close();
             latch.countDown();
         }
-    }
-
-    @Override
-    public void run() {
-
     }
 
     public void shutdown() {
