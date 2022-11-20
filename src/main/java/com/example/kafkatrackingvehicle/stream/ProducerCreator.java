@@ -16,6 +16,7 @@ import java.util.concurrent.ExecutionException;
 import static com.example.kafkatrackingvehicle.constant.Constant.BOOTSTRAP_SERVERS;
 import static com.example.kafkatrackingvehicle.constant.Constant.TOPIC;
 
+
 @Configuration
 public class ProducerCreator {
 
