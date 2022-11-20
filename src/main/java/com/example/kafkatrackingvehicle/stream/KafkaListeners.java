@@ -14,13 +14,11 @@ public class KafkaListeners {
     private static final Logger log = LoggerFactory.getLogger(KafkaListeners.class);
 
 
-    @KafkaListener(topics = TOPIC,
-            groupId = GROUP_ID)
+    @KafkaListener(topics = TOPIC,groupId = GROUP_ID)
     public void consume(String message) {
         CountDownLatch latch = new CountDownLatch(1);
         Runnable consumerRunnable = new ConsumerRunnable(
                 BOOTSTRAP_SERVERS,
-                GROUP_ID,
                 TOPIC,
                 latch
         );

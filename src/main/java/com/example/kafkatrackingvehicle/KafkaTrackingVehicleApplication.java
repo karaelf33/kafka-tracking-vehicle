@@ -10,6 +10,7 @@ public class KafkaTrackingVehicleApplication {
     public static void main(String[] args) {
         SpringApplication.run(KafkaTrackingVehicleApplication.class, args);
         ProducerCreator.runProducer();
+
     }
 
 }
