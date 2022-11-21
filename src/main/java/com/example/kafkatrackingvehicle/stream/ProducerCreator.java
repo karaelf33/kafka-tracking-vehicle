@@ -26,6 +26,8 @@ public class ProducerCreator {
     @Autowired
     private KafkaTemplate<String, Vehicle> kafkaTemplate;
 
+
+
     public void sendMessage(Vehicle vehicle) {
         log.info(String.format("Message sent -> %s", vehicle));
         kafkaTemplate.send(TOPIC, vehicle);

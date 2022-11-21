@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
+import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
@@ -24,6 +25,7 @@ public class ConsumerRunnable implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(ConsumerRunnable.class.getName());
     private final CountDownLatch latch;
     private final KafkaConsumer<String, Vehicle> consumer;
+    private List<Object> recordHistory;
 
 
     public ConsumerRunnable(String bootstrapServers,
@@ -55,6 +57,7 @@ public class ConsumerRunnable implements Runnable {
                 message++;
                 ConsumerRecords<String, Vehicle> records = consumer.poll(Duration.ofMillis(100));
                 for (ConsumerRecord<String, Vehicle> RECORD : records) {
+                    recordHistory.add(RECORD);
                     log.info("Calculate distance, Key: {}, Value: {}" , RECORD.key() , RECORD.value());
                     log.info("Partition: {}, Offset:{}" , RECORD.partition() , RECORD.offset());
                 }
@@ -72,4 +75,8 @@ public class ConsumerRunnable implements Runnable {
     }
 
 
+    public Collection<Object> getRecordHistory() {
+        return recordHistory;
+
+    }
 }
