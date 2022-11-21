@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
@@ -20,12 +21,11 @@ import java.util.concurrent.CountDownLatch;
 import static com.example.kafkatrackingvehicle.constant.Constant.TOPIC;
 
 
-
 public class ConsumerRunnable implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(ConsumerRunnable.class.getName());
     private final CountDownLatch latch;
     private final KafkaConsumer<String, Vehicle> consumer;
-    private List<Object> recordHistory;
+    private List<Object> recordHistory = new ArrayList<>();
 
 
     public ConsumerRunnable(String bootstrapServers,
@@ -35,16 +35,16 @@ public class ConsumerRunnable implements Runnable {
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-       props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
         consumer = new KafkaConsumer<>(props);
-        TopicPartition partitionToReadFrom=new TopicPartition(TOPIC,0);
-        long offsetReadFrom=15L;
+        TopicPartition partitionToReadFrom = new TopicPartition(TOPIC, 0);
+        long offsetReadFrom = 15L;
         consumer.assign(List.of(partitionToReadFrom));
 
 
-        consumer.seek(partitionToReadFrom,offsetReadFrom);
+        consumer.seek(partitionToReadFrom, offsetReadFrom);
 
 
     }
@@ -52,17 +52,17 @@ public class ConsumerRunnable implements Runnable {
     @Override
     public void run() {
         try {
-            int message=0;
-            while (message<10) {
+            int message = 0;
+            while (message < 10) {
                 message++;
                 ConsumerRecords<String, Vehicle> records = consumer.poll(Duration.ofMillis(100));
                 for (ConsumerRecord<String, Vehicle> RECORD : records) {
-                    recordHistory.add(RECORD);
-                    log.info("Calculate distance, Key: {}, Value: {}" , RECORD.key() , RECORD.value());
-                    log.info("Partition: {}, Offset:{}" , RECORD.partition() , RECORD.offset());
+                    recordHistory.add(RECORD.value());
+                    log.info("Calculate distance, Key: {}, Value: {}", RECORD.key(), RECORD.value());
+                    log.info("Partition: {}, Offset:{}", RECORD.partition(), RECORD.offset());
                 }
             }
-        }catch (WakeupException e) {
+        } catch (WakeupException e) {
             log.info("Received shutdown signal!");
         } finally {
             consumer.close();
