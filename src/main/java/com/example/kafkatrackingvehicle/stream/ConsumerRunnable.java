@@ -1,28 +1,38 @@
 package com.example.kafkatrackingvehicle.stream;
 
+import com.example.kafkatrackingvehicle.model.Vehicle;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
+
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.annotation.EnableKafka;
+import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 import java.time.Duration;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
 import static com.example.kafkatrackingvehicle.constant.Constant.TOPIC;
 
 
+
 public class ConsumerRunnable implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(ConsumerRunnable.class.getName());
     private final CountDownLatch latch;
-    private KafkaConsumer<String, String> consumer;
+    private final KafkaConsumer<String, Vehicle> consumer;
+
 
     public ConsumerRunnable(String bootstrapServers,
                             String topic,
@@ -31,13 +41,13 @@ public class ConsumerRunnable implements Runnable {
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+       props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
         consumer = new KafkaConsumer<>(props);
         TopicPartition partitionToReadFrom=new TopicPartition(TOPIC,0);
         long offsetReadFrom=15L;
-        consumer.assign(Arrays.asList(partitionToReadFrom));
+        consumer.assign(List.of(partitionToReadFrom));
 
 
         consumer.seek(partitionToReadFrom,offsetReadFrom);
@@ -51,16 +61,15 @@ public class ConsumerRunnable implements Runnable {
             int message=0;
             while (message<10) {
                 message++;
-                ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
-                for (ConsumerRecord<String, String> RECORD : records) {
-                    System.out.println("AAAAAAAAAAA");
-                    log.info("Key: {}" , RECORD.key() , ", Value: {}" , RECORD.value());
-                    log.info("Partition: {}" , RECORD.partition() , ", Offset:{}" , RECORD.offset());
+                ConsumerRecords<String, Vehicle> records = consumer.poll(Duration.ofMillis(100));
+                for (ConsumerRecord<String, Vehicle> RECORD : records) {
+                    log.info("Calculate distance, Key: {}, Value: {}" , RECORD.key() , RECORD.value());
+                    log.info("Partition: {}, Offset:{}" , RECORD.partition() , RECORD.offset());
                 }
             }
-        }catch (WakeupException e){
+        }catch (WakeupException e) {
             log.info("Received shutdown signal!");
-        }finally {
+        } finally {
             consumer.close();
             latch.countDown();
         }
@@ -69,4 +78,6 @@ public class ConsumerRunnable implements Runnable {
     public void shutdown() {
         consumer.wakeup();
     }
+
+
 }
