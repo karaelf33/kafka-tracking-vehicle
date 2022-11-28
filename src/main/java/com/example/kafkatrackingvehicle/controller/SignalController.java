@@ -16,7 +16,7 @@ public class SignalController {
         this.producerCreator = producerCreator;
     }
 
-    @PostMapping("/signals")
+    @GetMapping("/signals")
     public ResponseEntity<String> vehicleSignals(@RequestBody Vehicle vehicle) {
         producerCreator.sendMessage(vehicle);
         return ResponseEntity.ok("Message sent to kafka topic");

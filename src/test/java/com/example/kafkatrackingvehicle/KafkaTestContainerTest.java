@@ -2,7 +2,6 @@ package com.example.kafkatrackingvehicle;
 
 
 import com.example.kafkatrackingvehicle.model.Vehicle;
-import com.example.kafkatrackingvehicle.stream.ConsumerRunnable;
 import com.example.kafkatrackingvehicle.util.JsonSerializer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -10,12 +9,10 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.serialization.LongDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -73,6 +70,6 @@ public class KafkaTestContainerTest {
 
         KafkaConsumer<String, Vehicle> consumer = new KafkaConsumer<>(props);
         consumer.subscribe(List.of("vehicle_tracking_02"));
-        return new ConsumerRunnable(BOOTSTRAP_SERVERS,TOPIC,latch);
+        return new ConsumerRunnable(BOOTSTRAP_SERVERS,latch);
     }
 }

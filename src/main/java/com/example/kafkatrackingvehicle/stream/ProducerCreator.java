@@ -1,7 +1,7 @@
 package com.example.kafkatrackingvehicle.stream;
 
 import com.example.kafkatrackingvehicle.model.Vehicle;
-import com.example.kafkatrackingvehicle.util.JsonSerializer;
+import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
@@ -24,11 +24,11 @@ public class ProducerCreator {
     private static final Logger log = LoggerFactory.getLogger(ProducerCreator.class);
 
     @Autowired
-    private KafkaTemplate<String, Vehicle> kafkaTemplate;
+    private static KafkaTemplate<String, Vehicle> kafkaTemplate;
 
 
 
-    public void sendMessage(Vehicle vehicle) {
+    public static void sendMessage(Vehicle vehicle) {
         log.info(String.format("Message sent -> %s", vehicle));
         kafkaTemplate.send(TOPIC, vehicle);
     }
